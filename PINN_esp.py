@@ -39,7 +39,7 @@ X_scaled = scaler_X.fit_transform(X)
 y_scaled = scaler_y.fit_transform(y)
 
 etiquetas_estrato = pd.qcut(y[:, 3], q=10, labels=False)
-n_splits = 10
+n_splits = 5
 skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
 
 # Constantes físicas
@@ -143,62 +143,3 @@ df_resultados = pd.DataFrame(data)
 df_resultados.to_excel('resultados_predicciones_PINN.xlsx', index=False)
 print("Archivo guardado como 'resultados_predicciones_PINN.xlsx'")
 
-# Selección aleatoria de 3 ejemplos
-indices_aleatorios = random.sample(range(len(df_resultados)), 3)
-
-# Energías de simulación
-energias_interp = np.linspace(0.5, 6.5, 100)
-
-# Gráfica
-fig, axs = plt.subplots(3, 2, figsize=(15, 12))
-fig.suptitle('Comparación de Ψ y Δ reales vs predichos (PINN)')
-
-for fila_idx, i in enumerate(indices_aleatorios):
-    fila = df_resultados.iloc[i]
-
-    # PARÁMETROS REALES
-    A_real = fila['A_real']
-    C_real = fila['C_real']
-    Eg_real = fila['Eg_real']
-    E0_real = fila['E0_real']
-    eps_inf_real = fila['eps_inf_real']
-    
-    E_real, n_real, k_real, _, _ = generar_nyk(A_real, E0_real, C_real, Eg_real, eps_inf_real, 
-                                               Emin=energias_interp.min(), Emax=energias_interp.max(), 
-                                               points=len(energias_interp))
-    rp_real, rs_real = ecuaciones_fresnel(n_real, k_real, theta_i)
-    psi_real, delta_real = calculo_psi_delta(rp_real, rs_real)
-
-    # PARÁMETROS PREDICHOS
-    A_pred = fila['A_pred']
-    C_pred = fila['C_pred']
-    Eg_pred = fila['Eg_pred']
-    E0_pred = fila['E0_pred']
-    eps_inf_pred = fila['eps_inf_pred']
-    
-    E_pred, n_pred, k_pred, _, _ = generar_nyk(A_pred, E0_pred, C_pred, Eg_pred, eps_inf_pred, 
-                                               Emin=energias_interp.min(), Emax=energias_interp.max(), 
-                                               points=len(energias_interp))
-    rp_pred, rs_pred = ecuaciones_fresnel(n_pred, k_pred, theta_i)
-    psi_pred, delta_pred = calculo_psi_delta(rp_pred, rs_pred)
-
-    # GRAFICAR Ψ
-    axs[fila_idx, 0].plot(E_real, np.degrees(psi_real), label='Ψ real', linestyle='--')
-    axs[fila_idx, 0].plot(E_pred, np.degrees(psi_pred), label='Ψ predicho')
-    axs[fila_idx, 0].set_ylabel('Ψ (°)')
-    axs[fila_idx, 0].legend()
-    axs[fila_idx, 0].set_title(f'Conjunto {fila_idx+1} - Ψ')
-
-    # GRAFICAR Δ
-    axs[fila_idx, 1].plot(E_real, np.degrees(delta_real), label='Δ real', linestyle='--')
-    axs[fila_idx, 1].plot(E_pred, np.degrees(delta_pred), label='Δ predicho')
-    axs[fila_idx, 1].set_ylabel('Δ (°)')
-    axs[fila_idx, 1].legend()
-    axs[fila_idx, 1].set_title(f'Conjunto {fila_idx+1} - Δ')
-
-# Etiquetas finales
-for ax in axs[-1]:
-    ax.set_xlabel('Energía (eV)')
-
-plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-plt.show()
