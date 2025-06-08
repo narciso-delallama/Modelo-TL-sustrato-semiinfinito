@@ -13,10 +13,10 @@ E_range = (0.5, 6.5)
 # Rango de parámetros (centrados en los valores del ejemplo)
 def generar_parametros():
     while True:
-        A = np.random.uniform(50, 250)
+        A = np.random.uniform(50, 350)
         E0 = np.random.uniform(1.0, 5.0)
-        C = np.random.uniform(1.0, 5.0)
-        Eg = np.random.uniform(1.5, 5.5)
+        C = np.random.uniform(0.5, 5.0)
+        Eg = np.random.uniform(1.0, 5.0)
         eps_inf = np.random.uniform(1.0, 3.0)
 
 
