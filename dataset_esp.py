@@ -5,7 +5,7 @@ from Tauc_Lorentz import generar_nyk, ecuaciones_fresnel, calculo_psi_delta
 
 # Configuración
 np.random.seed(42)
-n_muestras = 10000
+n_muestras = 20000
 energias_por_muestra = 50
 theta_i = 70  # Ángulo de incidencia en grados
 E_range = (0.5, 6.5)
